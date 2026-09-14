@@ -31,7 +31,10 @@ services:
       retries: 3
 
   xcmetrics:
-    image: spotify/xcmetrics:latest
+    # Integration branch: build from this working tree rather than pulling
+    # Spotify's published image, which predates these changes.
+    build: .
+    image: xcmetrics:local
     depends_on:
       redis:
         condition: service_healthy
