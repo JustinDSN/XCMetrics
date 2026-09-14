@@ -23,7 +23,7 @@ import Foundation
 extension Double {
     /// from https://stackoverflow.com/a/38036978
     func xcm_roundToDecimal(_ fractionDigits: Int) -> Double {
-        let multiplier = pow(10, Double(fractionDigits))
+        let multiplier = Foundation.pow(10, Double(fractionDigits))
         return (self * multiplier).rounded(.toNearestOrEven) / multiplier
     }
 

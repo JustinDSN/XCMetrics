@@ -1,7 +1,7 @@
 # ================================
 # Build image
 # ================================
-FROM swift:5.7-focal as build
+FROM swift:6.3-noble AS build
 WORKDIR /build
 
 # Install libraries needed
@@ -19,12 +19,12 @@ RUN swift package resolve
 COPY . .
 
 # Compile with optimizations
-RUN swift build --enable-test-discovery --product XCMetricsBackend -c release
+RUN swift build --product XCMetricsBackend -c release
 
 # ================================
 # Run image
 # ================================
-FROM swift:5.7-focal-slim
+FROM swift:6.3-noble-slim
 
 # Create a vapor user and group with /app as its home directory
 RUN useradd --user-group --create-home --home-dir /app vapor

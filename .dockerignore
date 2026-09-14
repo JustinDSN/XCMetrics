@@ -1,0 +1,10 @@
+# Build artifacts from host toolchains — must not leak into the Linux image
+.build
+DerivedData
+.swiftpm
+releases
+*.xcodeproj
+
+# Not needed to build XCMetricsBackend
+.git
+.DS_Store

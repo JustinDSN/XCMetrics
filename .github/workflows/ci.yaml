@@ -7,21 +7,21 @@ jobs:
   # SwiftLint:
   #   runs-on: ubuntu-latest
   #   steps:
-  #     - uses: actions/checkout@v1
+  #     - uses: actions/checkout@v4
   #     - name: SwiftLint
   #       uses: norio-nomura/action-swiftlint@3.1.0
   #       with:
   #         args: --strict
 
   macOS:
-    runs-on: macOS-13
+    runs-on: macos-26
     env:
-      XCODE_VERSION: ${{ '14.2' }}
+      XCODE_VERSION: ${{ '26.5' }}
     steps:
       - name: Select Xcode
         run: "sudo xcode-select -s /Applications/Xcode_$XCODE_VERSION.app"
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v4
       - name: Build and Run
         run: swift build -c release
       - name: Test
@@ -32,10 +32,10 @@ jobs:
   linux:
     runs-on: ubuntu-latest
     container:
-      image: swift:5.7
+      image: swift:6.3
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v4
       - name: Install zlib
         run: apt-get update && apt-get install -y ruby zlib1g-dev libssl-dev
       - name: Build Backend
