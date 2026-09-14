@@ -1,0 +1,16 @@
+# Integration branch only — local Grafana wired to the compose Postgres.
+apiVersion: 1
+datasources:
+  - name: XCMetrics
+    uid: xcmetrics-pg
+    type: postgres
+    access: proxy
+    url: postgresql:5432
+    database: xcmetrics-dev
+    user: xcmetrics-dev
+    isDefault: true
+    secureJsonData:
+      password: xcmetrics-dev
+    jsonData:
+      sslmode: disable
+      postgresVersion: 1200

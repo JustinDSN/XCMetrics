@@ -1,0 +1,260 @@
+{
+  "uid": "xcmetrics-local",
+  "title": "XCMetrics \u2014 Local",
+  "tags": [
+    "xcmetrics"
+  ],
+  "timezone": "utc",
+  "schemaVersion": 39,
+  "version": 2,
+  "refresh": "30s",
+  "time": {
+    "from": "now-3y",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Builds",
+      "type": "stat",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "xcmetrics-pg"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 0,
+        "y": 0
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "xcmetrics-pg"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT count(*) AS \"Builds\" FROM builds;",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Build steps",
+      "type": "stat",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "xcmetrics-pg"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 0
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "xcmetrics-pg"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT count(*) AS \"Steps\" FROM build_steps;",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Files compiled",
+      "type": "stat",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "xcmetrics-pg"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 8,
+        "y": 0
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "xcmetrics-pg"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT coalesce(sum(compiled_count),0) AS \"Compiled\" FROM builds;",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Warnings / errors",
+      "type": "stat",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "xcmetrics-pg"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 12,
+        "y": 0
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "xcmetrics-pg"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT coalesce(sum(warning_count),0) AS \"Warnings\", coalesce(sum(error_count),0) AS \"Errors\" FROM builds;",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Build duration by project (s)",
+      "type": "barchart",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "xcmetrics-pg"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 4
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "xcmetrics-pg"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT project_name AS \"Project\", round(duration::numeric,2) AS \"Duration (s)\" FROM builds ORDER BY duration DESC;",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Compilation vs total duration (s)",
+      "type": "barchart",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "xcmetrics-pg"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 4
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "xcmetrics-pg"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT project_name AS \"Project\", round(compilation_duration::numeric,2) AS \"Compilation\", round((duration-compilation_duration)::numeric,2) AS \"Other\" FROM builds ORDER BY duration DESC;",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Builds",
+      "type": "table",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "xcmetrics-pg"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 12
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "xcmetrics-pg"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT b.day AS \"Day\", b.project_name AS \"Project\", b.schema AS \"Scheme\", b.category AS \"Category\", b.build_status AS \"Status\", round(b.duration::numeric,2) AS \"Duration (s)\", b.compiled_count AS \"Compiled\", b.warning_count AS \"Warnings\", b.error_count AS \"Errors\" FROM builds b ORDER BY b.day DESC;",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "Slowest build steps",
+      "type": "table",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "xcmetrics-pg"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 12
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "xcmetrics-pg"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT b.project_name AS \"Project\", left(s.title, 90) AS \"Step\", round(s.duration::numeric,3) AS \"Duration (s)\" FROM build_steps s JOIN builds b ON s.build_identifier = b.id ORDER BY s.duration DESC LIMIT 25;",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "title": "Slowest targets",
+      "type": "table",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "xcmetrics-pg"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 20
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "xcmetrics-pg"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT b.project_name AS \"Project\", t.name AS \"Target\", round(t.duration::numeric,3) AS \"Duration (s)\", t.warning_count AS \"Warnings\", t.error_count AS \"Errors\" FROM build_targets t JOIN builds b ON t.build_identifier = b.id ORDER BY t.duration DESC LIMIT 25;",
+          "refId": "A"
+        }
+      ]
+    }
+  ]
+}

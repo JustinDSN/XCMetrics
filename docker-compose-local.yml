@@ -51,5 +51,44 @@ services:
       - REDIS_HOST=redis
       - DB_HOST=postgresql
 
+  # Scheduled statistics aggregation. The Backstage plugin and the
+  # /v1/statistics/* endpoints read tables this job populates. Vapor only fires
+  # scheduled jobs inside a `queues --scheduled` worker, so it cannot run in the
+  # `serve` container above. Mirrors DeploymentExamples/MultiInstances/
+  # xcmetrics-scheduled-jobs-deployment.yaml.
+  xcmetrics-jobs:
+    build: .
+    image: xcmetrics:local
+    command: ["queues", "--scheduled", "--env", "production"]
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgresql:
+        condition: service_healthy
+    environment:
+      - XCMETRICS_SCHEDULE_STATISTICS_JOBS=1
+      - XCMETRICS_START_JOBS_SAME_INSTANCE=0
+      - XCMETRICS_USE_ASYNC_LOG_PROCESSING=1
+      - XCMETRICS_REDACT_USER_DATA=1
+      - XCMETRICS_USE_GCS_REPOSITORY=0
+      - LOG_LEVEL=info
+      - REDIS_HOST=redis
+      - DB_HOST=postgresql
+
+  grafana:
+    image: grafana/grafana:11.6.0
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgresql:
+        condition: service_healthy
+    environment:
+      # Local-only convenience: no login prompt when kicking the tires.
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+    volumes:
+      - ./local/grafana/provisioning:/etc/grafana/provisioning
+
 volumes:
   postgres:
